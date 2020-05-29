@@ -1,0 +1,23 @@
+{
+  "name": "next-experiments",
+  "version": "1.0.0-alpha",
+  "description": "Infrastructure for running ABTests with next.js",
+  "main": "index.js",
+  "repository": "https://github.com/Sheertex/next-experiments",
+  "author": "Ilia Pirozhenko <ilia@ipirozhenko.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "ts-mocha -p ./tsconfig.test.json -r jsdom-global/register",
+    "test:unit": "yarn run test src**/*.spec.ts --exclude node_modules",
+    "test:unit:win": "yarn run test src**/*.spec.ts --exclude node_modules/**"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.21.1"
+  },
+  "dependencies": {
+    "eventemitter3": "^4.0.4",
+    "react": "^16.13.1"
+  }
+}
