@@ -1,4 +1,4 @@
-import react from 'react'
+import React from 'react'
 import Component1 from './sampleA'
 import Component2 from './sampleB'
 

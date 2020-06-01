@@ -1,30 +1,35 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next A/B Testing
 
-## Getting Started
+This example shows how to add A/B tests to the next.js site.
 
-First, run the development server:
+## How to use
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+### Prerequsistes
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Clone the latest version of next.js fork with the A/B testing. [Github](https://github.com/Sheertex/next.js/tree/ABTesting)
+1. Run `yarn` in the cloned directory
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### Run the sample
 
-## Learn More
+1. In the `package.json` of sample project replace: 
+    ```
+    "next": "<next-version>",
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+    with 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    ```
+    "next": "file:<local-path-to-cloned-nextjs-repo>/packages/next",
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+    _Note: if you on windows use double backslashes, for example `"next": "C:\\next.js\\packages\\next"`_
 
-## Deploy on Vercel
+1. In the sample project root directory run
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    ```yarn```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+    If you have any problems installing forked version of next.js, please review next.js development documentation ([Running your own app with locally compiled version of Next.js](https://github.com/Sheertex/next.js/blob/ABTesting/contributing.md#running-your-own-app-with-locally-compiled-version-of-nextjs))
+
+1. Export project to static files with project run ```yarn build && yarn export && yarn serve```
+
+1. Navigate to http://localhost:8080 and explore the statitaclly generated pages with A/B experiments

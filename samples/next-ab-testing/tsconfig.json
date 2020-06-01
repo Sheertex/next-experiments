@@ -1,0 +1,40 @@
+{
+    "compilerOptions": {
+      "jsx": "preserve",
+      "esModuleInterop": true,
+      "sourceMap": true,
+      "declaration": false,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "importHelpers": true,
+      "target": "es6",
+      "typeRoots": [
+        "node_modules/@types"
+      ],
+      "lib": [
+        "es2018",
+        "dom"
+      ],
+      "allowJs": true,
+      "skipLibCheck": true,
+      "strict": false,
+      "forceConsistentCasingInFileNames": true,
+      "noEmit": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true
+    },
+    "exclude": [
+      "node_modules",
+      "**/*.spec.{ts,tsx}",
+      "**/*.stories.{ts,tsx}",
+    ],
+    "include": [
+      "next-env.d.ts",
+      "**/*.ts",
+      "**/*.tsx",
+      "*.config.js"      
+    ]
+  }
+  

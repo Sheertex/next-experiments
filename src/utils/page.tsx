@@ -1,13 +1,11 @@
-import React from 'react';
-//import { GetStaticProps } from 'next';
+import React from "react";
 
-// TODO: I did not like the current files hierarchy and naming, maybe we need to come up with better solution
+import { AB_TEST_PAYLOAD_KEY } from "../abTestingInfra/utils";
 import {
   getPermutatedPaths,
   stripPermutationsPayload,
-  AB_TEST_PAYLOAD_KEY,
-} from '../abTestingInfra/utils';
-import { ABTestingContextProvider } from '../abTestingInfra/ABTestingContext';
+} from "../abTestingInfra/permutations";
+import { ABTestingContextProvider } from "../abTestingInfra/ABTestingContext";
 
 // TODO: maybe we should remove async from this func? It did not perform internally any async actions
 export async function permuteStaticPaths(paths: string[]): Promise<string[]> {
@@ -15,7 +13,7 @@ export async function permuteStaticPaths(paths: string[]): Promise<string[]> {
 }
 
 export const withPermutationContext = (
-  Component: (props: object) => JSX.Element,
+  Component: (props: object) => JSX.Element
 ) => (props: object): JSX.Element => {
   const permutationsPayload = props[AB_TEST_PAYLOAD_KEY];
 
@@ -34,7 +32,7 @@ export const withPermutedStaticProps = (getStaticProps?) => {
 
     if (!!context && !!context.params) {
       const { result, permutationsPayload } = stripPermutationsPayload(
-        context.params,
+        context.params
       );
 
       context.params = result;

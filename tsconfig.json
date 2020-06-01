@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "module": "esnext",
+    "target": "es2015",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2018", "dom"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "exclude": [
+    "node_modules",
+    "**/*.spec.{ts,tsx}",
+    "samples/**",
+    "**/tests/**",
+    "dist"
+  ],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js"]
+}

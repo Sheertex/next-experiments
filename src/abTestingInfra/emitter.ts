@@ -59,7 +59,7 @@ export const recordWin = (
 
   if (!experiments.has(experimentName)) {
     throw new Error(
-      `Can't call win on experiment that is not playing. Check that Experiment component is mounted. Experiment name: ${experimentName}`,
+      `Can't call win on experiment that is not playing. Check that Experiment component is mounted and triggerPlay function hook is working correctly. Experiment name: ${experimentName}`,
     );
   }
 
