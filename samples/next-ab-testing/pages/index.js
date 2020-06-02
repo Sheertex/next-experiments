@@ -4,9 +4,9 @@ import Link from "next/link";
 export {
   permuteStaticPaths,
   getStaticProps,
-} from "next-experiments/dist/utils/page";
+} from "next-experiments";
 
-import { withPermutationContext } from "next-experiments/dist/utils/page";
+import { withPermutationContext } from "next-experiments";
 
 export default withPermutationContext(() => {
   return (

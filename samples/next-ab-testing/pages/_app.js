@@ -1,10 +1,7 @@
 import "../styles/global.css";
 import Head from "next/head";
 
-import emitter, {
-  EXPERIMENT_PLAYED,
-  EXPERIMENT_WON,
-} from "next-experiments/dist/abTestingInfra/emitter";
+import { emitter, EXPERIMENT_PLAYED, EXPERIMENT_WON } from "next-experiments";
 
 if (typeof window !== "undefined") {
   emitter.on(EXPERIMENT_PLAYED, ({ experimentName, variantName }) => {

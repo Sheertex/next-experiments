@@ -7,14 +7,9 @@
   },
   "exclude": [
     "node_modules",
-    "**/*.spec.{ts,tsx}",    
+    "**/*.spec.{ts,tsx}",
     "samples/**",
     "**/tests/**",
-    "dist",
   ],
-  "include": [    
-    "**/*.ts",
-    "**/*.js",
-    "**/*.tsx"
-  ]
+  "include": ["src/**/*"]
 }

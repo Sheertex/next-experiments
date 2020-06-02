@@ -10,8 +10,8 @@
     "serve": "http-server ./out"
   },
   "dependencies": {
-    "next": "file:C:\\Work\\next.js\\packages\\next",
-    "next-experiments": "Sheertex/next-experiments#canary",
+    "next": "path_to_fork",
+    "next-experiments": "^1.0.4-alpha",
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },

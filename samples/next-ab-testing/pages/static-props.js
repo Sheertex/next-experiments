@@ -2,9 +2,9 @@ import TextExperiment from "../components/TextExperiment";
 import {
   withPermutationContext,
   withPermutedStaticProps,
-} from "next-experiments/dist/utils/page";
+} from "next-experiments";
 
-export { permuteStaticPaths } from "next-experiments/dist/utils/page";
+export { permuteStaticPaths } from "next-experiments";
 
 export default withPermutationContext(({ message }) => {
   return (

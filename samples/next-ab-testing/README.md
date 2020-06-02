@@ -8,12 +8,16 @@ This example shows how to add A/B tests to the next.js site.
 
 1. Clone the latest version of next.js fork with the A/B testing. [Github](https://github.com/Sheertex/next.js/tree/ABTesting)
 1. Run `yarn` in the cloned directory
+1. Run `yarn dev` 
+1. Run `yarn types` in a separate terminal
+
+For a more detailed instructions visit [Next.js Contributing guide](https://github.com/vercel/next.js/blob/canary/contributing.md)
 
 ### Run the sample
 
 1. In the `package.json` of sample project replace: 
     ```
-    "next": "<next-version>",
+    "next": "path_to_fork",
     ```
 
     with 
@@ -32,4 +36,4 @@ This example shows how to add A/B tests to the next.js site.
 
 1. Export project to static files with project run ```yarn build && yarn export && yarn serve```
 
-1. Navigate to http://localhost:8080 and explore the statitaclly generated pages with A/B experiments
+1. Navigate to http://localhost:8080 and explore statically generated pages with A/B experiments

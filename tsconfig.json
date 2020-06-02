@@ -23,8 +23,7 @@
     "node_modules",
     "**/*.spec.{ts,tsx}",
     "samples/**",
-    "**/tests/**",
-    "dist"
+    "**/tests/**"
   ],
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js"]
+  "include": ["src/**/*"]
 }

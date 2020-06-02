@@ -30,3 +30,6 @@ yarn-error.log*
 .env.production.local
 samples/next-ab-testing/dist/
 samples/next-ab-testing/experiments.json
+dist/*
+
+samples/next-ab-testing/package-lock.json
