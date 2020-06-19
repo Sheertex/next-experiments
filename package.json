@@ -1,19 +1,17 @@
 {
   "name": "next-experiments",
-  "version": "1.0.4-alpha",
+  "version": "1.0.5-alpha",
   "description": "Infrastructure for running ABTests with next.js",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/Sheertex/next-experiments",
   "author": "Ilia Pirozhenko <ilia@ipirozhenko.com>",
   "license": "MIT",
   "private": false,
   "scripts": {
     "build": "tsc -p ./tsconfig.lib.json",
-    "prepare": "npm run build",
-    "postinstall": "node ./bin/install.js",
-    "test": "ts-mocha -p ./tsconfig.test.json",
-    "test:unit": "yarn run test **/*.spec.ts --exclude node_modules --exclude samples --exclude dist",
-    "test:unit:win": "yarn run test **/*.spec.ts --exclude node_modules/** --exclude samples/** --exclude dist/**"
+    "prepare": "npm run build",    
+    "test": "ts-mocha -p ./tsconfig.test.json",    
+    "test:unit": "yarn run test src/**/*.spec.ts"    
   },
   "volta": {
     "node": "12.16.1",

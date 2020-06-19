@@ -15,12 +15,11 @@ Check out samples folder to get a basic concepts of next-experiments
 #### Prerequsistes
 
 1. Install library `yarn add next-experiments`
-1. Install fork of `next.js` that supports A/B tests. [Link](https://github.com/Sheertex/next.js/tree/ABTesting)
-   1. Review next.js development documentation to make it run with your nextjs project. ([Running your own app with locally compiled version of Next.js](https://github.com/Sheertex/next.js/blob/ABTesting/contributing.md#running-your-own-app-with-locally-compiled-version-of-nextjs))
+1. Install fork of `next.js` that supports A/B tests. `yarn add @sheertex/next`   
 1. Change your `next.config.js` to add `ExperimentExtractorPlugin` and fix for `fs` modules
 
    ```js
-   const ExperimentExtractorPlugin = require("next-experiments/experimentExtractor");
+   const ExperimentExtractorPlugin = require("next-experiments/dist/experimentExtractor");
 
    let config = {
      distDir: "./dist",
@@ -157,3 +156,12 @@ Win event is passed to the Variant component children. It's useful when you want
 #### Further Reading
 
 For advanced usage examples refer to the sample project
+
+
+## Contribution
+
+### How to publish new version to npm?
+
+1. Run `yarn run test:unit`
+1. Bump version in `package.json`
+1. Run `npm publish`
