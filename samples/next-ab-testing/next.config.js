@@ -1,4 +1,4 @@
-const ExperimentExtractorPlugin = require("next-experiments/experimentExtractor");
+const ExperimentExtractorPlugin = require("next-experiments/dist/experimentExtractor");
 
 let config = {
   exportTrailingSlash: true,

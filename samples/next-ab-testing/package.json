@@ -10,8 +10,8 @@
     "serve": "http-server ./out"
   },
   "dependencies": {
-    "next": "path_to_fork",
-    "next-experiments": "^1.0.4-alpha",
+    "next": "https://registry.npmjs.org/@sheertex/next/-/next-9.4.5-canary.14.tgz",
+    "next-experiments": "^1.0.7-alpha",
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },

@@ -1,10 +1,12 @@
-import React from 'react';
-import { AB_TEST_PAYLOAD_PREFIX } from '../utils';
-import { useRouter } from 'next/router';
-import { ABTestingPayload } from '../types';
+import React, { ReactNode, createContext } from "react";
+import { useRouter } from "next/router";
+import { AB_TEST_PAYLOAD_PREFIX } from "../utils";
+import { ABTestingPayload } from "../types";
 
-const defaultABTestingContext: ABTestingPayload = {};
-const ABTestingContext = React.createContext(defaultABTestingContext);
+type Props = {
+  children: ReactNode;
+  permutationsPayload: string;
+};
 
 function getABTestContext(payload: string): ABTestingPayload {
   const searchParams = new URLSearchParams(payload);
@@ -26,47 +28,32 @@ function getABTestContextFromPath(path: string): ABTestingPayload {
     return {};
   }
 
-  // removing possible trailing slash
-  const normalizedPath = path.replace(/\/$/, '');
+  const pathWithoutTrailingSlashAndQueryStr = path.replace(
+    /\/?(\?.*)?$/gim,
+    ""
+  );
 
-  // we should exclude possible query string from payload
-  const queryIdx = path.indexOf('?');
-  let endIdx = normalizedPath.length;
-
-  if (queryIdx !== -1) {
-    endIdx = queryIdx;
-  }
-
-  const testPayload = normalizedPath.slice(
-    idx + AB_TEST_PAYLOAD_PREFIX.length,
-    endIdx,
+  const testPayload = pathWithoutTrailingSlashAndQueryStr.slice(
+    idx + AB_TEST_PAYLOAD_PREFIX.length
   );
 
   return getABTestContext(decodeURIComponent(testPayload));
 }
 
-type Props = {
-  children: React.ReactNode;
-  permutationsPayload: string;
-};
+const defaultABTestingContext: ABTestingPayload = {};
+const { Provider, Consumer } = createContext(defaultABTestingContext);
 
-function ABTestingContextProvider({
+export const ABTestingContextProvider = ({
   children,
   permutationsPayload,
-}: Props): JSX.Element {
+}: Props): JSX.Element => {
   const router = useRouter();
 
   const abTestingContext = permutationsPayload
     ? getABTestContext(permutationsPayload)
     : getABTestContextFromPath(router.asPath);
 
-  return (
-    <ABTestingContext.Provider value={abTestingContext}>
-      {children}
-    </ABTestingContext.Provider>
-  );
-}
+  return <Provider value={abTestingContext}>{children}</Provider>;
+};
 
-const ABTestingContextConsumer = ABTestingContext.Consumer;
-
-export { ABTestingContextProvider, ABTestingContextConsumer };
+export const ABTestingContextConsumer = Consumer;

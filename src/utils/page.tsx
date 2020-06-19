@@ -2,14 +2,14 @@ import React from "react";
 
 import { AB_TEST_PAYLOAD_KEY } from "../abTestingInfra/utils";
 import {
-  getPermutatedPaths,
+  explodePathsWithVariantCombinations ,
   stripPermutationsPayload,
 } from "../abTestingInfra/permutations";
 import { ABTestingContextProvider } from "../abTestingInfra/ABTestingContext";
 
 // TODO: maybe we should remove async from this func? It did not perform internally any async actions
 export async function permuteStaticPaths(paths: string[]): Promise<string[]> {
-  return getPermutatedPaths(paths);
+  return explodePathsWithVariantCombinations(paths);
 }
 
 export const withPermutationContext = (

@@ -1,36 +1,24 @@
+import nodePath from "path";
+import { ParsedUrlQuery } from "querystring";
+import { EXPERIMENTS_FILE_NAME } from "../experimentExtractor/constants";
+import { AB_TEST_PAYLOAD_PREFIX } from "./utils";
+import { Experiment, ExperimentVariant } from "./types";
+
 let fs = null;
 
 if (typeof window === "undefined") {
   fs = require("fs-extra");
 }
 
-import nodePath from "path";
-import { ParsedUrlQuery } from "querystring";
-import { EXPERIMENTS_FILE_NAME } from "../experimentExtractor/constants";
-import { AB_TEST_PAYLOAD_PREFIX } from "./utils";
-
-interface Experiment {
-  name: string;
-  variants: string[];
-}
-
-interface ExperimentVariant {
-  [key: string]: string;
-}
-
-function getPermutationForExperiment(
+function getActiveVariantForExperiment(
   experiment: Experiment
 ): ExperimentVariant[] {
-  const result: ExperimentVariant[] = [];
-
-  experiment.variants.forEach((variantName) => {
+  return experiment.variants.map((variantName) => {
     const item: ExperimentVariant = {};
 
     item[experiment.name] = variantName;
-    result.push(item);
+    return item;
   });
-
-  return result;
 }
 
 function getPermutations(
@@ -40,7 +28,7 @@ function getPermutations(
     return undefined;
   }
 
-  const curPermutaions = getPermutationForExperiment(experimentsArray[0]);
+  const curPermutaions = getActiveVariantForExperiment(experimentsArray[0]);
 
   if (experimentsArray.length === 1) {
     return curPermutaions;
@@ -59,9 +47,11 @@ function getPermutations(
   return permutations;
 }
 
-function getPermutatedPaths(paths: string[]): string[] {
-  const CWD = process.cwd();
-  const pathToExperimentsPayload = nodePath.join(CWD, EXPERIMENTS_FILE_NAME);
+export function explodePathsWithVariantCombinations(paths: string[]): string[] {
+  const pathToExperimentsPayload = nodePath.join(
+    process.cwd(),
+    EXPERIMENTS_FILE_NAME
+  );
 
   if (!fs.existsSync(pathToExperimentsPayload)) {
     console.warn(
@@ -76,13 +66,13 @@ function getPermutatedPaths(paths: string[]): string[] {
   const permutatedPaths: string[] = [];
 
   paths.forEach((path) => {
-    const normalizedPath = path === '/' ? '/index': path    
+    const normalizedPath = path === "/" ? "/index" : path;
     experiments.forEach((experiment) => {
       const pathRegex = new RegExp(experiment.pagePathRegex, "gi");
 
       if (pathRegex.test(normalizedPath)) {
         const numberOfExperiments = Object.keys(experiment.experimentsPayload)
-          .length;        
+          .length;
 
         if (numberOfExperiments > 5) {
           throw new Error(
@@ -95,13 +85,13 @@ function getPermutatedPaths(paths: string[]): string[] {
 
         const transformed: Experiment[] = Object.keys(
           experiment.experimentsPayload
-        ).reduce((accumualtor, expName) => {
-          accumualtor.push({
+        ).reduce((flattenedExperiments, expName) => {
+          flattenedExperiments.push({
             name: expName,
             variants: experiment.experimentsPayload[expName],
           });
 
-          return accumualtor;
+          return flattenedExperiments;
         }, []);
 
         const permutatedExperiments = getPermutations(transformed);
@@ -126,33 +116,33 @@ function getPermutatedPaths(paths: string[]): string[] {
   return [...paths, ...permutatedPaths];
 }
 
-function stripPermutationsPayload(
+export function stripPermutationsPayload(
   query: ParsedUrlQuery
 ): { result: ParsedUrlQuery; permutationsPayload: string } {
   let permutationsPayload = "";
 
   const resultQuery: ParsedUrlQuery = Object.keys(query).reduce(
-    (accumulator, key) => {
+    (queryParamsDict, key) => {
       const value = query[key];
 
       if (typeof value !== "string") {
-        accumulator[key] = value;
+        queryParamsDict[key] = value;
 
-        return accumulator;
+        return queryParamsDict;
       }
 
       const idx = value.indexOf(AB_TEST_PAYLOAD_PREFIX);
 
       if (idx === -1) {
-        accumulator[key] = value;
+        queryParamsDict[key] = value;
 
-        return accumulator;
+        return queryParamsDict;
       }
 
-      accumulator[key] = value.slice(0, idx);
+      queryParamsDict[key] = value.slice(0, idx);
       permutationsPayload = value.slice(idx + AB_TEST_PAYLOAD_PREFIX.length);
 
-      return accumulator;
+      return queryParamsDict;
     },
     {}
   );
@@ -162,5 +152,3 @@ function stripPermutationsPayload(
     permutationsPayload,
   };
 }
-
-export { getPermutatedPaths, stripPermutationsPayload };

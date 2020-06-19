@@ -1,4 +1,10 @@
-import React from "react";
+import React, {
+  ReactNode,
+  Component,
+  Children,
+  isValidElement,
+  SFC,
+} from "react";
 import { assertNameIsValid } from "../utils";
 import { ABTestingContextConsumer } from "../ABTestingContext";
 import PropTypes from "prop-types";
@@ -6,7 +12,7 @@ import { recordPlay } from "../emitter";
 import { ABTestingPayload, VariantProps, Variants } from "../types";
 import ExperimentContext from "../ExperimentContext";
 
-class Experiment extends React.Component {
+class Experiment extends Component {
   static propTypes = {
     name: PropTypes.string.isRequired,
     defaultVariantName: PropTypes.string.isRequired,
@@ -18,7 +24,7 @@ class Experiment extends React.Component {
     name: string;
     defaultVariantName: string;
     triggerPlay?: (() => void) | Promise<void>;
-    children: React.ReactNode;
+    children: ReactNode;
   };
 
   variants: Variants;
@@ -32,11 +38,11 @@ class Experiment extends React.Component {
   }
 
   componentDidMount(): void {
-    const { name, triggerPlay } = this.props;
-
     if (typeof window === "undefined") {
       return;
     }
+
+    const { name, triggerPlay } = this.props;
 
     if (!!triggerPlay && typeof triggerPlay === "function") {
       Promise.resolve(triggerPlay())
@@ -53,24 +59,21 @@ class Experiment extends React.Component {
     recordPlay(name, this.variantName);
   }
 
-  static filterVariants(children: React.ReactNode): Variants {
+  static filterVariants(children: ReactNode): Variants {
     const variants: Variants = {};
 
-    React.Children.forEach(
-      children as React.Component[],
-      (element: React.Component) => {
-        if (
-          !React.isValidElement(element) ||
-          (element.type as React.SFC).displayName !== "Variant"
-        ) {
-          throw new Error(
-            "Experiment children must be components of type Variant."
-          );
-        }
-
-        variants[(element.props as VariantProps).name] = element;
+    Children.forEach(children as Component[], (element: Component) => {
+      if (
+        !isValidElement(element) ||
+        (element.type as SFC).displayName !== "Variant"
+      ) {
+        throw new Error(
+          "Experiment children must be components of type Variant."
+        );
       }
-    );
+
+      variants[(element.props as VariantProps).name] = element;
+    });
 
     if (Object.keys(variants).length === 0) {
       throw new Error("Experiment has no Variants");
@@ -79,7 +82,7 @@ class Experiment extends React.Component {
     return variants;
   }
 
-  getVariantToDisplay(payload: ABTestingPayload): React.ReactNode {
+  getVariantToDisplay(payload: ABTestingPayload): ReactNode {
     const { name, defaultVariantName } = this.props;
 
     const selectedVariantName = payload[name];
@@ -91,11 +94,6 @@ class Experiment extends React.Component {
     }
 
     if (!this.variants[selectedVariantName]) {
-      // TODO: it's too chatty, maybe we should disable it
-      console.error(
-        `Can't find "${selectedVariantName}" variant in experiment "${name}", will use default variant "${defaultVariantName}"`
-      );
-
       this.variantName = defaultVariantName;
 
       return this.variants[this.variantName];
@@ -106,7 +104,7 @@ class Experiment extends React.Component {
     return this.variants[selectedVariantName];
   }
 
-  render(): React.ReactNode {
+  render(): ReactNode {
     const { name, defaultVariantName } = this.props;
 
     assertNameIsValid(name);

@@ -2,7 +2,10 @@ import assert from "assert";
 import { describe, it, beforeEach, afterEach } from "mocha";
 import mockFS from "mock-fs";
 
-import { stripPermutationsPayload, getPermutatedPaths } from "../permutations";
+import {
+  stripPermutationsPayload,
+  explodePathsWithVariantCombinations,
+} from "./permutations";
 
 describe("abTestingInfra/permutations", function () {
   describe("#stripPermutationsPayload", function () {
@@ -45,14 +48,14 @@ describe("abTestingInfra/permutations", function () {
     });
   });
 
-  describe("#getPermutatedPaths", function () {
+  describe("#explodePathsWithVariantCombinations ", function () {
     describe("when experiments json file does not exist", function () {
       beforeEach(() => {
         mockFS();
       });
 
       it("did not change paths if experiments file is not found", function () {
-        const result = getPermutatedPaths(["/index"]);
+        const result = explodePathsWithVariantCombinations(["/index"]);
 
         assert.deepEqual(result, ["/index"]);
       });
@@ -72,7 +75,7 @@ describe("abTestingInfra/permutations", function () {
           "experiments.json": JSON.stringify([]),
         });
 
-        const result = getPermutatedPaths(["/index"]);
+        const result = explodePathsWithVariantCombinations(["/index"]);
 
         assert.deepEqual(result, ["/index"]);
       });
@@ -86,7 +89,7 @@ describe("abTestingInfra/permutations", function () {
             },
           ]),
         });
-        assert.deepEqual(getPermutatedPaths(["/"]), [
+        assert.deepEqual(explodePathsWithVariantCombinations(["/"]), [
           "/",
           "/index--ab--experiment=variant",
         ]);
@@ -102,7 +105,7 @@ describe("abTestingInfra/permutations", function () {
           ]),
         });
 
-        assert.deepEqual(getPermutatedPaths(["/index"]), [
+        assert.deepEqual(explodePathsWithVariantCombinations(["/index"]), [
           "/index",
           "/index--ab--experiment=variant",
         ]);
@@ -118,7 +121,9 @@ describe("abTestingInfra/permutations", function () {
           ]),
         });
 
-        assert.deepEqual(getPermutatedPaths(["/index"]), ["/index"]);
+        assert.deepEqual(explodePathsWithVariantCombinations(["/index"]), [
+          "/index",
+        ]);
       });
 
       it("returns correct permutations if experiment has several variants", function () {
@@ -131,7 +136,7 @@ describe("abTestingInfra/permutations", function () {
           ]),
         });
 
-        assert.deepEqual(getPermutatedPaths(["/index"]), [
+        assert.deepEqual(explodePathsWithVariantCombinations(["/index"]), [
           "/index",
           "/index--ab--experiment=variantA",
           "/index--ab--experiment=variantB",
@@ -143,17 +148,17 @@ describe("abTestingInfra/permutations", function () {
           "experiments.json": JSON.stringify([
             {
               pagePathRegex: ".*",
-              experimentsPayload: { z: ["1", "2"], a: ["1", "2"]},
+              experimentsPayload: { z: ["1", "2"], a: ["1", "2"] },
             },
           ]),
         });
 
-        assert.deepEqual(getPermutatedPaths(["/index"]), [
+        assert.deepEqual(explodePathsWithVariantCombinations(["/index"]), [
           "/index",
           "/index--ab--a=1&z=1",
           "/index--ab--a=2&z=1",
           "/index--ab--a=1&z=2",
-          "/index--ab--a=2&z=2"
+          "/index--ab--a=2&z=2",
         ]);
       });
 
@@ -170,7 +175,7 @@ describe("abTestingInfra/permutations", function () {
           ]),
         });
 
-        assert.deepEqual(getPermutatedPaths(["/index"]), [
+        assert.deepEqual(explodePathsWithVariantCombinations(["/index"]), [
           "/index",
           "/index--ab--experimentA=variant&experimentB=variant",
         ]);
@@ -189,7 +194,7 @@ describe("abTestingInfra/permutations", function () {
           ]),
         });
 
-        assert.deepEqual(getPermutatedPaths(["/index"]), [
+        assert.deepEqual(explodePathsWithVariantCombinations(["/index"]), [
           "/index",
           "/index--ab--experimentA=variantA&experimentB=variantA",
           "/index--ab--experimentA=variantA&experimentB=variantB",
@@ -216,7 +221,7 @@ describe("abTestingInfra/permutations", function () {
         });
 
         assert.throws(
-          () => getPermutatedPaths(["/index"]),
+          () => explodePathsWithVariantCombinations(["/index"]),
           /^Error: Too much experiments.*/gi
         );
       });

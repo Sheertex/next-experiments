@@ -1,9 +1,10 @@
-import EventEmitter from 'eventemitter3';
+import EventEmitter from "eventemitter3";
+import assert from "assert";
 
 const emitter = new EventEmitter();
 
-export const EXPERIMENT_PLAYED = 'EXPERIMENT_PLAYING';
-export const EXPERIMENT_WON = 'EXPERIMENT_WON';
+export const EXPERIMENT_PLAYED = "EXPERIMENT_PLAYING";
+export const EXPERIMENT_WON = "EXPERIMENT_WON";
 
 declare global {
   interface Window {
@@ -11,25 +12,20 @@ declare global {
   }
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.experiments = new Map<string, boolean>();
 }
 
 export const recordPlay = (
   experimentName: string,
-  variantName: string,
+  variantName: string
 ): void => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
-  if (!experimentName) {
-    throw new Error('Experiment name is undefined');
-  }
-
-  if (!variantName) {
-    throw new Error('Variant name is undefined');
-  }
+  assert.ok(experimentName, "Experiment name is undefined");
+  assert.ok(variantName, "Variant name is undefined");
 
   const experiments = window.experiments;
 
@@ -41,25 +37,20 @@ export const recordPlay = (
 
 export const recordWin = (
   experimentName: string,
-  variantName: string,
+  variantName: string
 ): void => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
-  if (!experimentName) {
-    throw new Error('Experiment name is undefined');
-  }
-
-  if (!variantName) {
-    throw new Error('Variant name is undefined');
-  }
+  assert.ok(experimentName, "Experiment name is undefined");
+  assert.ok(variantName, "Variant name is undefined");
 
   const experiments = window.experiments;
 
   if (!experiments.has(experimentName)) {
     throw new Error(
-      `Can't call win on experiment that is not playing. Check that Experiment component is mounted and triggerPlay function hook is working correctly. Experiment name: ${experimentName}`,
+      `Can't call win on experiment that is not playing. Check that Experiment component is mounted and triggerPlay function hook is working correctly. Experiment name: ${experimentName}`
     );
   }
 

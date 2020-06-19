@@ -1,7 +1,7 @@
-const AB_TEST_PAYLOAD_PREFIX = '--ab--';
-const AB_TEST_PAYLOAD_KEY = 'AB_TESTING_PAYLOAD';
+export const AB_TEST_PAYLOAD_PREFIX = "--ab--";
+export const AB_TEST_PAYLOAD_KEY = "AB_TESTING_PAYLOAD";
 
-function isValidName(name: string): boolean {
+export function isValidName(name: string): boolean {
   if (!name) {
     return false;
   }
@@ -10,23 +10,16 @@ function isValidName(name: string): boolean {
   return /^[a-z0-9-]+$/.test(name);
 }
 
-function assertNameIsValid(name: string): void {
+export function assertNameIsValid(name: string): void {
   if (!name) {
-    throw new Error('Name is undefined');
+    throw new Error("Name is undefined");
   }
 
   if (!isValidName(name)) {
     throw new Error(
-      `"${name}" is not valid name. Use only lowercase latin symbols, digits and dash`,
+      `"${name}" is not valid name. Use only lowercase latin symbols, digits and dash`
     );
   }
 
   return;
 }
-
-export {
-  AB_TEST_PAYLOAD_KEY,
-  AB_TEST_PAYLOAD_PREFIX,  
-  assertNameIsValid,
-  isValidName,
-};

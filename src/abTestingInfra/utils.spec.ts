@@ -1,7 +1,7 @@
 import assert from "assert";
 import { describe, it, beforeEach, afterEach } from "mocha";
 
-import { isValidName } from "../utils";
+import { isValidName } from "./utils";
 
 describe("abTestingInfra/utils", function () {
   describe("#isValidName", function () {
