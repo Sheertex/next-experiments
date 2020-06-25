@@ -6,18 +6,19 @@ const {
 const { extractExperimentData } = require("./parser");
 
 // TODO: move to utils and add tests
-const chunkNameToPageNameRegex = (chunkName) => {
+const chunkNameToPageNameRegex = (chunkName) => {  
   // replacing all \\ to a /
   let normalizedChunkName = chunkName.replace(/\\+/gi, "/");
-  // replace .js extensions with $
-  normalizedChunkName = normalizedChunkName.replace(/\.\S+$/gi, "$");
+  // remove .js extension 
+  normalizedChunkName = normalizedChunkName.replace(/\.\S+$/gi, "");
   // replace 'pages' prefix with ^
   normalizedChunkName = normalizedChunkName.replace(/^pages/gi, "^");
   // replace all / with \/
   normalizedChunkName = normalizedChunkName.replace(/\//gi, "\\/");
   // replace [__anything__] with [^\s\/]+
   normalizedChunkName = normalizedChunkName.replace(/\[\S+\]/gi, "[^\\s\\/]+");
-
+  // add $ at the end
+  normalizedChunkName = `${normalizedChunkName}$`
   return normalizedChunkName;
 };
 

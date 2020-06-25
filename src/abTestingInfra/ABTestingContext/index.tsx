@@ -1,10 +1,12 @@
-import React from 'react';
-import { AB_TEST_PAYLOAD_PREFIX } from '../utils';
-import { useRouter } from 'next/router';
-import { ABTestingPayload } from '../types';
+import React, { ReactNode } from "react";
+import { useRouter } from "next/router";
+import { AB_TEST_PAYLOAD_PREFIX } from "../utils";
+import { ABTestingPayload } from "../types";
 
-const defaultABTestingContext: ABTestingPayload = {};
-const ABTestingContext = React.createContext(defaultABTestingContext);
+type Props = {
+  children: ReactNode;
+  permutationsPayload: string;
+};
 
 function getABTestContext(payload: string): ABTestingPayload {
   const searchParams = new URLSearchParams(payload);
@@ -26,34 +28,31 @@ function getABTestContextFromPath(path: string): ABTestingPayload {
     return {};
   }
 
-  // removing possible trailing slash
-  const normalizedPath = path.replace(/\/$/, '');
+  const pathWithoutTrailingSlash = path.replace(/\/$/, "");
 
   // we should exclude possible query string from payload
-  const queryIdx = path.indexOf('?');
-  let endIdx = normalizedPath.length;
+  const queryIdx = path.indexOf("?");
+  let endIdx = pathWithoutTrailingSlash.length;
 
   if (queryIdx !== -1) {
     endIdx = queryIdx;
   }
 
-  const testPayload = normalizedPath.slice(
+  const testPayload = pathWithoutTrailingSlash.slice(
     idx + AB_TEST_PAYLOAD_PREFIX.length,
-    endIdx,
+    endIdx
   );
 
   return getABTestContext(decodeURIComponent(testPayload));
 }
 
-type Props = {
-  children: React.ReactNode;
-  permutationsPayload: string;
-};
+const defaultABTestingContext: ABTestingPayload = {};
+const ABTestingContext = React.createContext(defaultABTestingContext);
 
-function ABTestingContextProvider({
+export const ABTestingContextProvider = ({
   children,
   permutationsPayload,
-}: Props): JSX.Element {
+}: Props): JSX.Element => {
   const router = useRouter();
 
   const abTestingContext = permutationsPayload
@@ -65,8 +64,6 @@ function ABTestingContextProvider({
       {children}
     </ABTestingContext.Provider>
   );
-}
+};
 
-const ABTestingContextConsumer = ABTestingContext.Consumer;
-
-export { ABTestingContextProvider, ABTestingContextConsumer };
+export const ABTestingContextConsumer = ABTestingContext.Consumer;

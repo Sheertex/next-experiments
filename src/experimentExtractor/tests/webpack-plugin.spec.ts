@@ -81,7 +81,7 @@ describe("experimentExtractor/webpack-plugin", function () {
       const expectedResult = [
         {
           experimentsPayload: { experiment: ["variantA", "variantB"] },
-          pagePathRegex: "index",
+          pagePathRegex: "index$",
         },
       ];
 
@@ -111,7 +111,7 @@ describe("experimentExtractor/webpack-plugin", function () {
             experiment1: ["variantA", "variantB"],
             experiment2: ["variantA", "variantB"],
           },
-          pagePathRegex: "index",
+          pagePathRegex: "index$",
         },
       ];
 
@@ -138,7 +138,7 @@ describe("experimentExtractor/webpack-plugin", function () {
           experimentsPayload: {
             experiment: ["variantA", "variantB"],
           },
-          pagePathRegex: "^\\/products\\/[^\\s\\/]+",
+          pagePathRegex: "^\\/products\\/[^\\s\\/]+$",
         },
       ];
 
