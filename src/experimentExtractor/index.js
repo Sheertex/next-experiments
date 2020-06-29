@@ -61,46 +61,49 @@ class ExperimentExtractorPlugin {
         );
       }
 
-      const experimentsByChunkName = new Map();
+      const experimentsByChunkName = compilation.chunks.reduce(
+        (experimentsByChunkName, chunk) => {
+          chunk.getModules().forEach((module) => {
+            module.buildInfo &&
+              module.buildInfo.fileDependencies &&
+              module.buildInfo.fileDependencies.forEach((filepath) => {
+                foundModulesWithExperiments.forEach((foundModule) => {
+                  const componentWithExperiment = foundModule.resource;
+                  if (componentWithExperiment === filepath) {
+                    const chunkName = chunk.name;
+                    const experimentsData = extractExperimentData(
+                      componentWithExperiment
+                    );
 
-      compilation.chunks.forEach((chunk) => {
-        chunk.getModules().forEach((module) => {
-          module.buildInfo &&
-            module.buildInfo.fileDependencies &&
-            module.buildInfo.fileDependencies.forEach((filepath) => {
-              foundModulesWithExperiments.forEach((foundModule) => {
-                const componentWithExperiment = foundModule.resource;
-                if (componentWithExperiment === filepath) {
-                  const chunkName = chunk.name;
-                  const experimentsData = extractExperimentData(
-                    componentWithExperiment
-                  );
-
-                  if (experimentsByChunkName.has(chunkName)) {
-                    const prevData = experimentsByChunkName.get(chunkName);
-                    experimentsByChunkName.set(chunkName, {
-                      ...prevData,
-                      componentsWithExperiments: [
-                        ...prevData.componentsWithExperiments,
-                        componentWithExperiment,
-                      ],
-                      experimentsPayload: {
-                        ...prevData.experimentsPayload,
-                        ...experimentsData,
-                      },
-                    });
-                  } else {
-                    experimentsByChunkName.set(chunkName, {
-                      chunkName: chunkName,
-                      componentsWithExperiments: [componentWithExperiment],
-                      experimentsPayload: experimentsData,
-                    });
+                    if (experimentsByChunkName.has(chunkName)) {
+                      const prevData = experimentsByChunkName.get(chunkName);
+                      experimentsByChunkName.set(chunkName, {
+                        ...prevData,
+                        componentsWithExperiments: [
+                          ...prevData.componentsWithExperiments,
+                          componentWithExperiment,
+                        ],
+                        experimentsPayload: {
+                          ...prevData.experimentsPayload,
+                          ...experimentsData,
+                        },
+                      });
+                    } else {
+                      experimentsByChunkName.set(chunkName, {
+                        chunkName: chunkName,
+                        componentsWithExperiments: [componentWithExperiment],
+                        experimentsPayload: experimentsData,
+                      });
+                    }
                   }
-                }
+                });
               });
-            });
-        });
-      });
+          });
+
+          return experimentsByChunkName;
+        },
+        new Map()
+      );
 
       const experiments = Array.from(experimentsByChunkName.values())
         .filter((value) => !!value.experimentsPayload)

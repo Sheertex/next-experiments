@@ -33,21 +33,21 @@ function getVisitor(cache) {
         throw new Error("Found experiment with empty name");
       }
 
-      const variantNames = [];
-
-      path.container.children
+      const variantNames = path.container.children
         .filter(
           (child) =>
             child.type === "JSXElement" &&
             child.openingElement.name.name === VARIANT_COMPONENT_NAME
         )
-        .forEach((variant) => {
+        .reduce((variantNames, variant) => {
           const variantNameAttribute = variant.openingElement.attributes.find(
             (attr) => attr.name.name === "name"
           );
           const variantNameValue = variantNameAttribute.value.value;
           variantNames.push(variantNameValue);
-        });
+
+          return variantNames;
+        }, []);
 
       if (variantNames.length === 0) {
         throw new Error("Found experiment w/o variants");

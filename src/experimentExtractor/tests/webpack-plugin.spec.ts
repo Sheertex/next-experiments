@@ -5,64 +5,60 @@ import webpack from "webpack";
 import ExtractExperimentsPlugin from "../index";
 import fs from "fs-extra";
 
-describe("experimentExtractor/webpack-plugin", function () {
-  const resultFilePath = path.resolve(__dirname, "tmp", "experiments.json");
+const resultFilePath = path.resolve(__dirname, "tmp", "experiments.json");
 
-  const getWebpackConfig = (entryFilePath, entryName = "index") => {
-    const entry = {};
-    entry[entryName] = path.resolve(
-      __dirname,
-      "webpackFiles",
-      ...entryFilePath
-    );
+const getWebpackConfig = (entryFilePath, entryName = "index") => {
+  const entry = {};
+  entry[entryName] = path.resolve(__dirname, "webpackFiles", ...entryFilePath);
 
-    return {
-      target: "node",
-      mode: "production",
-      entry: entry,
-      resolve: {
-        extensions: [".jsx", ".tsx", ".ts", ".js"],
-      },
-      output: {
-        libraryTarget: "commonjs",
-        filename: "[name]/index.js",
-        path: path.resolve(__dirname, "tmp"),
-      },
-      module: {
-        rules: [
-          {
-            test: /\.[jt]sx?/,
-            include: path.resolve(__dirname, "..", ".."),
-            exclude: /node_modules/,
-            use: {
-              loader: "ts-loader",
-              options: { reportFiles: ["src/**/*.{ts,tsx}", "!**.spec.ts"] },
-            },
+  return {
+    target: "node",
+    mode: "production",
+    entry: entry,
+    resolve: {
+      extensions: [".jsx", ".tsx", ".ts", ".js"],
+    },
+    output: {
+      libraryTarget: "commonjs",
+      filename: "[name]/index.js",
+      path: path.resolve(__dirname, "tmp"),
+    },
+    module: {
+      rules: [
+        {
+          test: /\.[jt]sx?/,
+          include: path.resolve(__dirname, "..", ".."),
+          exclude: /node_modules/,
+          use: {
+            loader: "ts-loader",
+            options: { reportFiles: ["src/**/*.{ts,tsx}", "!**.spec.ts"] },
           },
-        ],
-      },
-      plugins: [
-        new ExtractExperimentsPlugin({
-          resultFilePath: resultFilePath,
-          isDebug: false,
-          libraryName: "abTestingInfra",
-        }),
+        },
       ],
-    };
+    },
+    plugins: [
+      new ExtractExperimentsPlugin({
+        resultFilePath: resultFilePath,
+        isDebug: false,
+        libraryName: "abTestingInfra",
+      }),
+    ],
   };
+};
 
-  const runWebpack = (entryFilePath, entryName = undefined) =>
-    new Promise((resolve, reject) => {
-      webpack(getWebpackConfig(entryFilePath, entryName), (err, stats) => {
-        if (err) {
-          reject(err);
-        } else if (stats.hasErrors()) {
-          reject(stats.toString());
-        }
-        resolve();
-      });
+const runWebpack = (entryFilePath, entryName = undefined) =>
+  new Promise((resolve, reject) => {
+    webpack(getWebpackConfig(entryFilePath, entryName), (err, stats) => {
+      if (err) {
+        reject(err);
+      } else if (stats.hasErrors()) {
+        reject(stats.toString());
+      }
+      resolve();
     });
+  });
 
+describe("experimentExtractor/webpack-plugin", function () {
   describe("#ExperimentExtractorPlugin", function () {
     beforeEach(() => {
       fs.emptyDirSync(path.resolve(__dirname, "tmp"));
@@ -72,95 +68,101 @@ describe("experimentExtractor/webpack-plugin", function () {
       fs.emptyDirSync(path.resolve(__dirname, "tmp"));
     });
 
-    it("finds one experiment in sample .jsx file", async function () {
-      this.timeout(10000);
+    describe("correctly parses .jsx files", function () {
+      it("with zero experiments", async function () {
+        this.timeout(10000);
 
-      await runWebpack(["sample.jsx"]);
+        await runWebpack(["empty.jsx"]);
 
-      const result = fs.readJSONSync(resultFilePath);
-      const expectedResult = [
-        {
-          experimentsPayload: { experiment: ["variantA", "variantB"] },
-          pagePathRegex: "index$",
-        },
-      ];
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [];
 
-      assert.deepStrictEqual(result, expectedResult);
-    });
+        assert.deepStrictEqual(result, expectedResult);
+      });
 
-    it("file w/o experiments but with Experiment import will not be added to experiments.json", async function () {
-      this.timeout(10000);
+      it("with one experiment", async function () {
+        this.timeout(10000);
 
-      await runWebpack(["empty.jsx"]);
+        await runWebpack(["sample.jsx"]);
 
-      const result = fs.readJSONSync(resultFilePath);
-      const expectedResult = [];
-
-      assert.deepStrictEqual(result, expectedResult);
-    });
-
-    it("correctly parse file with several components with experiments", async function () {
-      this.timeout(10000);
-
-      await runWebpack(["entryWithSeveralExperiments", "index.jsx"]);
-
-      const result = fs.readJSONSync(resultFilePath);
-      const expectedResult = [
-        {
-          experimentsPayload: {
-            experiment1: ["variantA", "variantB"],
-            experiment2: ["variantA", "variantB"],
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [
+          {
+            experimentsPayload: { experiment: ["variantA", "variantB"] },
+            pagePathRegex: "index$",
           },
-          pagePathRegex: "index$",
-        },
-      ];
+        ];
 
-      assert.deepStrictEqual(result, expectedResult);
-    });
+        assert.deepStrictEqual(result, expectedResult);
+      });
 
-    it("fails if file did not have any experiments", async function () {
-      this.timeout(10000);
+      it("with several experiments", async function () {
+        this.timeout(10000);
 
-      assert.rejects(
-        runWebpack(["noImports.jsx"]),
-        /ERROR in Did not find any .jsx or .tsx component with "import { Experiment }/gim
-      );
-    });
+        await runWebpack(["entryWithSeveralExperiments", "index.jsx"]);
 
-    it("resolves correct regex for dynamic pages", async function () {
-      this.timeout(10000);
-
-      await runWebpack(["sample.jsx"], "pages/products/[handle]");
-
-      const result = fs.readJSONSync(resultFilePath);
-      const expectedResult = [
-        {
-          experimentsPayload: {
-            experiment: ["variantA", "variantB"],
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [
+          {
+            experimentsPayload: {
+              experiment1: ["variantA", "variantB"],
+              experiment2: ["variantA", "variantB"],
+            },
+            pagePathRegex: "index$",
           },
-          pagePathRegex: "^\\/products\\/[^\\s\\/]+$",
-        },
-      ];
+        ];
 
-      assert.deepStrictEqual(result, expectedResult);
+        assert.deepStrictEqual(result, expectedResult);
+      });
     });
 
-    it("resolves correct regex for static pages", async function () {
-      this.timeout(10000);
+    describe("it fails", function () {
+      it("when .jsx file has no Experiment import", async function () {
+        this.timeout(10000);
 
-      await runWebpack(["sample.jsx"], "pages/products.js");
+        assert.rejects(
+          runWebpack(["noImports.jsx"]),
+          /ERROR in Did not find any .jsx or .tsx component with "import { Experiment }/gim
+        );
+      });
+    });
 
-      const result = fs.readJSONSync(resultFilePath);
-      const expectedResult = [
-        {
-          experimentsPayload: {
-            experiment: ["variantA", "variantB"],
+    describe("resolve correct regex", function () {
+      it("for dynamic pages", async function () {
+        this.timeout(10000);
+
+        await runWebpack(["sample.jsx"], "pages/products/[handle]");
+
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [
+          {
+            experimentsPayload: {
+              experiment: ["variantA", "variantB"],
+            },
+            pagePathRegex: "^\\/products\\/[^\\s\\/]+$",
           },
-          pagePathRegex: "^\\/products$",
-        },
-      ];
+        ];
 
-      assert.deepStrictEqual(result, expectedResult);
+        assert.deepStrictEqual(result, expectedResult);
+      });
+
+      it("for static pages", async function () {
+        this.timeout(10000);
+
+        await runWebpack(["sample.jsx"], "pages/products.js");
+
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [
+          {
+            experimentsPayload: {
+              experiment: ["variantA", "variantB"],
+            },
+            pagePathRegex: "^\\/products$",
+          },
+        ];
+
+        assert.deepStrictEqual(result, expectedResult);
+      });
     });
   });
 });

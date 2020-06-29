@@ -67,12 +67,11 @@ export function explodePathsWithVariantCombinations(paths: string[]): string[] {
 
   paths.forEach((path) => {
     const normalizedPath = path === "/" ? "/index" : path;
-    experiments.forEach((experiment) => {
-      const pathRegex = new RegExp(experiment.pagePathRegex, "gi");
+    experiments.forEach(({ pagePathRegex, experimentsPayload }) => {
+      const pathRegex = new RegExp(pagePathRegex, "gi");
 
       if (pathRegex.test(normalizedPath)) {
-        const numberOfExperiments = Object.keys(experiment.experimentsPayload)
-          .length;
+        const numberOfExperiments = Object.keys(experimentsPayload).length;
 
         if (numberOfExperiments > 5) {
           throw new Error(
@@ -84,11 +83,11 @@ export function explodePathsWithVariantCombinations(paths: string[]): string[] {
         }
 
         const transformed: Experiment[] = Object.keys(
-          experiment.experimentsPayload
+          experimentsPayload
         ).reduce((flattenedExperiments, expName) => {
           flattenedExperiments.push({
             name: expName,
-            variants: experiment.experimentsPayload[expName],
+            variants: experimentsPayload[expName],
           });
 
           return flattenedExperiments;
@@ -131,16 +130,17 @@ export function stripPermutationsPayload(
         return queryParamsDict;
       }
 
-      const idx = value.indexOf(AB_TEST_PAYLOAD_PREFIX);
+      const hasAbTestsPayload = value.indexOf(AB_TEST_PAYLOAD_PREFIX) !== -1;
 
-      if (idx === -1) {
+      if (!hasAbTestsPayload) {
         queryParamsDict[key] = value;
 
         return queryParamsDict;
       }
 
-      queryParamsDict[key] = value.slice(0, idx);
-      permutationsPayload = value.slice(idx + AB_TEST_PAYLOAD_PREFIX.length);
+      const [queryValues, payload] = value.split(AB_TEST_PAYLOAD_PREFIX);
+      queryParamsDict[key] = queryValues;
+      permutationsPayload = payload;
 
       return queryParamsDict;
     },
