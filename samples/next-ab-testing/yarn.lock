@@ -3721,10 +3721,10 @@ neo-async@2.6.1, neo-async@^2.5.0, neo-async@^2.6.1:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.1.tgz#ac27ada66167fa8849a6addd837f6b189ad2081c"
   integrity sha512-iyam8fBuCUpWeKPGpaNMetEocMt364qkCsfL9JuhjXX6dRnguRVOfk2GZaDpPjcOKiiXCPINZC1GczQ7iTq3Zw==
 
-next-experiments@^1.0.7-alpha:
-  version "1.0.7-alpha"
-  resolved "https://registry.yarnpkg.com/next-experiments/-/next-experiments-1.0.7-alpha.tgz#620a5d4a45e6e237d6f952ef7cb9b418480f6810"
-  integrity sha512-yCNac4tyYIIV7q7+jdxRLXIRyJ1jmqjMB6tN0x4SWkWifd6o6x49RexYG9FnsYSLokfR5+TOzOAuoEm2MFh0MQ==
+next-experiments@^1.0.12-alpha:
+  version "1.0.12-alpha"
+  resolved "https://registry.yarnpkg.com/next-experiments/-/next-experiments-1.0.12-alpha.tgz#44aa89f462122b471322e7d173b62b12df072a30"
+  integrity sha512-pvw1CKlvtN2FqPx9Yk/cc9afFLN1QD4V9SAtXW7rOwtrOXKRe8q6LjUsjrz/4afaPDnoZyjup8pE8LYx7tQFQQ==
   dependencies:
     "@babel/traverse" "^7.10.1"
     eventemitter3 "^4.0.4"

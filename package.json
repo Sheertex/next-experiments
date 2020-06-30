@@ -1,6 +1,6 @@
 {
   "name": "next-experiments",
-  "version": "1.0.7-alpha",
+  "version": "1.0.12-alpha",
   "description": "Infrastructure for running ABTests with next.js",
   "main": "dist/index.js",
   "repository": "https://github.com/Sheertex/next-experiments",

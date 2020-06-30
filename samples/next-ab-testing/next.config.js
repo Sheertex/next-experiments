@@ -1,9 +1,11 @@
-const ExperimentExtractorPlugin = require("next-experiments/dist/experimentExtractor");
+const {
+  default: ExperimentExtractorPlugin,
+} = require('next-experiments/dist/webpack');
 
 let config = {
   exportTrailingSlash: true,
-  distDir: "./dist",
-  target: "serverless",
+  distDir: './dist',
+  target: 'serverless',
   webpack(config, { dev, isServer }) {
     if (!dev && isServer) {
       config.plugins.push(new ExperimentExtractorPlugin());
@@ -12,7 +14,7 @@ let config = {
     // Fixes npm packages that depend on `fs-extra` module
     if (!isServer) {
       config.node = {
-        fs: "empty",
+        fs: 'empty',
       };
     }
 

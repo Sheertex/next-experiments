@@ -20,7 +20,7 @@ Next-experiments is an attempt to add A/B testing infrastructure to the Next.js
 1. Change your `next.config.js` to add `ExperimentExtractorPlugin` and fix for `fs` modules
 
    ```js
-   const ExperimentExtractorPlugin = require("next-experiments/dist/experimentExtractor");
+   const { default: ExperimentExtractorPlugin } = require("next-experiments/dist/experimentExtractor");
 
    let config = {
      distDir: "./dist",

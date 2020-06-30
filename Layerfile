@@ -18,9 +18,6 @@ RUN volta install node yarn
 
 ### Cache
 CACHE ~/.yarn/cache
-# TODO: cache for next.js
-# CACHE ~/.next/cache
-# CACHE ~/dist/cache
 
 ### Install app w/ deps
 COPY . .
@@ -29,10 +26,10 @@ RUN yarn
 
 # Run
 ## Build
-# TODO parallelize
 RUN yarn run build
 
-## Test
+## Lint && Test
+RUN yarn run lint:all
 RUN yarn run test:unit
 
 ## Build sample site

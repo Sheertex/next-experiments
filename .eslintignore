@@ -3,5 +3,5 @@ node_modules
 *.config.js
 .eslintrc.js
 /samples
-/src/experimentExtractor/tests/webpackFiles
-/src/experimentExtractor/tests/parserFiles
+/src/webpack/tests/webpackFiles
+/src/webpack/tests/parserFiles
