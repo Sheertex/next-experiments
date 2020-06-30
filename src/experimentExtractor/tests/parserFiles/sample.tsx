@@ -1,11 +1,11 @@
-import React from 'react'
-import { Variant, Experiment } from '../../../abTestingInfra'
+import React, { ReactNode } from 'react';
+import { Variant, Experiment } from '../../../abTestingInfra';
 
-const TestComponent = () => (
-  <Experiment name='experiment' defaultVariantName='variantA'>
+const TestComponent = (): ReactNode => (
+  <Experiment name="experiment" defaultVariantName="variantA">
     <Variant name="variantA">A</Variant>
     <Variant name="variantB">B</Variant>
   </Experiment>
-)
+);
 
-export default TestComponent
+export default TestComponent;

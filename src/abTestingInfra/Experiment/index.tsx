@@ -4,13 +4,13 @@ import React, {
   Children,
   isValidElement,
   SFC,
-} from "react";
-import { assertNameIsValid } from "../utils";
-import { ABTestingContextConsumer } from "../ABTestingContext";
-import PropTypes from "prop-types";
-import { recordPlay } from "../emitter";
-import { ABTestingPayload, VariantProps, Variants } from "../types";
-import ExperimentContext from "../ExperimentContext";
+} from 'react';
+import { assertNameIsValid } from '../utils';
+import { ABTestingContextConsumer } from '../ABTestingContext';
+import PropTypes from 'prop-types';
+import { recordPlay } from '../emitter';
+import { ABTestingPayload, VariantProps, Variants } from '../types';
+import ExperimentContext from '../ExperimentContext';
 
 class Experiment extends Component {
   static propTypes = {
@@ -34,23 +34,23 @@ class Experiment extends Component {
     super(props);
 
     this.variants = Experiment.filterVariants(props.children);
-    this.variantName = "undefined";
+    this.variantName = 'undefined';
   }
 
   componentDidMount(): void {
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return;
     }
 
     const { name, triggerPlay } = this.props;
 
-    if (!!triggerPlay && typeof triggerPlay === "function") {
+    if (!!triggerPlay && typeof triggerPlay === 'function') {
       Promise.resolve(triggerPlay())
         .then(() => recordPlay(name, this.variantName))
         .catch((err) =>
           console.error(
-            `triggerPlay hook throw an error. Error: ${err.toString()}`
-          )
+            `triggerPlay hook throw an error. Error: ${err.toString()}`,
+          ),
         );
 
       return;
@@ -65,10 +65,10 @@ class Experiment extends Component {
     Children.forEach(children as Component[], (element: Component) => {
       if (
         !isValidElement(element) ||
-        (element.type as SFC).displayName !== "Variant"
+        (element.type as SFC).displayName !== 'Variant'
       ) {
         throw new Error(
-          "Experiment children must be components of type Variant."
+          'Experiment children must be components of type Variant.',
         );
       }
 
@@ -76,7 +76,7 @@ class Experiment extends Component {
     });
 
     if (Object.keys(variants).length === 0) {
-      throw new Error("Experiment has no Variants");
+      throw new Error('Experiment has no Variants');
     }
 
     return variants;
@@ -112,7 +112,7 @@ class Experiment extends Component {
 
     if (!this.variants[defaultVariantName]) {
       throw new Error(
-        `Variant with the name "${defaultVariantName}" is not found. Maybe you made a typo in defaultVariantName?`
+        `Variant with the name "${defaultVariantName}" is not found. Maybe you made a typo in defaultVariantName?`,
       );
     }
 

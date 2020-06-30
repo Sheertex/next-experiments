@@ -1,53 +1,54 @@
-const fs = require("fs-extra");
-const {
-  EXPERIMENT_COMPONENT_NAME,
-  EXPERIMENTS_FILE_NAME,
-} = require("./constants");
-const { extractExperimentData } = require("./parser");
+import fs from 'fs-extra';
+import { EXPERIMENT_COMPONENT_NAME, EXPERIMENTS_FILE_NAME } from './constants';
+import { extractExperimentData } from './parser';
 
 // TODO: move to utils and add tests
-const chunkNameToPageNameRegex = (chunkName) => {
+const chunkNameToPageNameRegex = (chunkName: string): string => {
   const normalizedChunkName = chunkName
-    .replace(/\\+/gi, "/") // replacing all \\ to a /
-    .replace(/\.\S+$/gi, "") // remove .js extension
-    .replace(/^pages/gi, "^") // replace 'pages' prefix with ^
-    .replace(/\//gi, "\\/") // replace all / with \/
-    .replace(/\[\S+\]/gi, "[^\\s\\/]+"); // replace [__anything__] with [^\s\/]+
+    .replace(/\\+/gi, '/') // replacing all \\ to a /
+    .replace(/\.\S+$/gi, '') // remove .js extension
+    .replace(/^pages/gi, '^') // replace 'pages' prefix with ^
+    .replace(/\//gi, '\\/') // replace all / with \/
+    .replace(/\[\S+\]/gi, '[^\\s\\/]+'); // replace [__anything__] with [^\s\/]+
 
   return `${normalizedChunkName}$`; // add $ at the end
 };
 
-const PLUGIN_NAME = "ExperimentExtractorPlugin";
-const LIBRARY_NAME = "next-experiments";
+const PLUGIN_NAME = 'ExperimentExtractorPlugin';
+const LIBRARY_NAME = 'next-experiments';
 
 class ExperimentExtractorPlugin {
+  libraryName: string;
+  isDebug: boolean;
+  resultFilePath: string;
+
   constructor(
     options = {
       resultFilePath: EXPERIMENTS_FILE_NAME,
       isDebug: false,
       libraryName: LIBRARY_NAME,
-    }
+    },
   ) {
     this.resultFilePath = options.resultFilePath;
     this.isDebug = options.isDebug;
     this.libraryName = options.libraryName;
   }
 
-  apply(compiler) {
+  apply(compiler): void {
     const foundModulesWithExperiments = [];
 
     compiler.hooks.normalModuleFactory.tap(PLUGIN_NAME, (factory) => {
-      factory.hooks.parser.for("javascript/auto").tap(PLUGIN_NAME, (parser) => {
+      factory.hooks.parser.for('javascript/auto').tap(PLUGIN_NAME, (parser) => {
         parser.hooks.importSpecifier.tap(
           PLUGIN_NAME,
-          (statement, source, exportName, identifierName) => {
+          (statement, source, exportName) => {
             if (
               source.indexOf(this.libraryName) !== -1 &&
               exportName === EXPERIMENT_COMPONENT_NAME
             ) {
               foundModulesWithExperiments.push(parser.state.module);
             }
-          }
+          },
         );
       });
     });
@@ -56,8 +57,8 @@ class ExperimentExtractorPlugin {
       if (foundModulesWithExperiments.length === 0) {
         compilation.errors.push(
           new Error(
-            `Did not find any .jsx or .tsx component with "import { ${EXPERIMENT_COMPONENT_NAME} } from "${this.libraryName}"`
-          )
+            `Did not find any .jsx or .tsx component with "import { ${EXPERIMENT_COMPONENT_NAME} } from "${this.libraryName}"`,
+          ),
         );
       }
 
@@ -69,14 +70,16 @@ class ExperimentExtractorPlugin {
               module.buildInfo.fileDependencies.forEach((filepath) => {
                 foundModulesWithExperiments.forEach((foundModule) => {
                   const componentWithExperiment = foundModule.resource;
+
                   if (componentWithExperiment === filepath) {
                     const chunkName = chunk.name;
                     const experimentsData = extractExperimentData(
-                      componentWithExperiment
+                      componentWithExperiment,
                     );
 
                     if (experimentsByChunkName.has(chunkName)) {
                       const prevData = experimentsByChunkName.get(chunkName);
+
                       experimentsByChunkName.set(chunkName, {
                         ...prevData,
                         componentsWithExperiments: [
@@ -102,10 +105,18 @@ class ExperimentExtractorPlugin {
 
           return experimentsByChunkName;
         },
-        new Map()
+        new Map(),
       );
 
-      const experiments = Array.from(experimentsByChunkName.values())
+      interface ExperimentDefinition {
+        chunkName: string;
+        componentsWithExperiments: string[];
+        experimentsPayload: object;
+      }
+
+      const experiments = Array.from(
+        experimentsByChunkName.values() as ExperimentDefinition[],
+      )
         .filter((value) => !!value.experimentsPayload)
         .map((value) => {
           const pagePathRegex = chunkNameToPageNameRegex(value.chunkName);
@@ -128,4 +139,4 @@ class ExperimentExtractorPlugin {
   }
 }
 
-module.exports = ExperimentExtractorPlugin;
+export default ExperimentExtractorPlugin;

@@ -1,0 +1,7 @@
+dist
+node_modules
+*.config.js
+.eslintrc.js
+/samples
+/src/experimentExtractor/tests/webpackFiles
+/src/experimentExtractor/tests/parserFiles

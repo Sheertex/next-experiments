@@ -1,7 +1,7 @@
-import React, { ReactNode, createContext } from "react";
-import { useRouter } from "next/router";
-import { AB_TEST_PAYLOAD_PREFIX } from "../utils";
-import { ABTestingPayload } from "../types";
+import React, { ReactNode, createContext } from 'react';
+import { useRouter } from 'next/router';
+import { AB_TEST_PAYLOAD_PREFIX } from '../utils';
+import { ABTestingPayload } from '../types';
 
 type Props = {
   children: ReactNode;
@@ -30,11 +30,11 @@ function getABTestContextFromPath(path: string): ABTestingPayload {
 
   const pathWithoutTrailingSlashAndQueryStr = path.replace(
     /\/?(\?.*)?$/gim,
-    ""
+    '',
   );
 
   const testPayload = pathWithoutTrailingSlashAndQueryStr.slice(
-    idx + AB_TEST_PAYLOAD_PREFIX.length
+    idx + AB_TEST_PAYLOAD_PREFIX.length,
   );
 
   return getABTestContext(decodeURIComponent(testPayload));

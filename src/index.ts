@@ -1,16 +1,16 @@
-import { Variant, Experiment } from "./abTestingInfra";
+import { Variant, Experiment } from './abTestingInfra';
 
 import emitter, {
   EXPERIMENT_PLAYED,
   EXPERIMENT_WON,
-} from "./abTestingInfra/emitter";
+} from './abTestingInfra/emitter';
 
 import {
   withPermutationContext,
   withPermutedStaticProps,
   permuteStaticPaths,
   getStaticProps,
-} from "./utils/page";
+} from './utils/page';
 
 export {
   Experiment,

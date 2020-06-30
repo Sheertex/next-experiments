@@ -1,15 +1,15 @@
-import React, { isValidElement } from "react";
-import { assertNameIsValid } from "../utils";
-import ExperimentContext from "../ExperimentContext";
-import { VariantProps } from "../types";
-import { recordWin } from "../emitter";
+import React, { isValidElement } from 'react';
+import { assertNameIsValid } from '../utils';
+import ExperimentContext from '../ExperimentContext';
+import { VariantProps } from '../types';
+import { recordWin } from '../emitter';
 
 function Variant(props: VariantProps): JSX.Element {
   const { name, children } = props;
 
   assertNameIsValid(name);
 
-  if (typeof children === "function") {
+  if (typeof children === 'function') {
     return (
       <ExperimentContext.Consumer>
         {(experimentName) => {
@@ -28,6 +28,6 @@ function Variant(props: VariantProps): JSX.Element {
   return <span>{children}</span>;
 }
 
-Variant.displayName = "Variant";
+Variant.displayName = 'Variant';
 
 export default Variant;

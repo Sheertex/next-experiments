@@ -1,5 +1,5 @@
-export const AB_TEST_PAYLOAD_PREFIX = "--ab--";
-export const AB_TEST_PAYLOAD_KEY = "AB_TESTING_PAYLOAD";
+export const AB_TEST_PAYLOAD_PREFIX = '--ab--';
+export const AB_TEST_PAYLOAD_KEY = 'AB_TESTING_PAYLOAD';
 
 export function isValidName(name: string): boolean {
   if (!name) {
@@ -12,12 +12,12 @@ export function isValidName(name: string): boolean {
 
 export function assertNameIsValid(name: string): void {
   if (!name) {
-    throw new Error("Name is undefined");
+    throw new Error('Name is undefined');
   }
 
   if (!isValidName(name)) {
     throw new Error(
-      `"${name}" is not valid name. Use only lowercase latin symbols, digits and dash`
+      `"${name}" is not valid name. Use only lowercase latin symbols, digits and dash`,
     );
   }
 

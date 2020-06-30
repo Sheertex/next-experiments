@@ -1,28 +1,29 @@
-import nodePath from "path";
-import { ParsedUrlQuery } from "querystring";
-import { EXPERIMENTS_FILE_NAME } from "../experimentExtractor/constants";
-import { AB_TEST_PAYLOAD_PREFIX } from "./utils";
-import { Experiment, ExperimentVariant } from "./types";
+import nodePath from 'path';
+import { ParsedUrlQuery } from 'querystring';
+import { EXPERIMENTS_FILE_NAME } from '../experimentExtractor/constants';
+import { AB_TEST_PAYLOAD_PREFIX } from './utils';
+import { Experiment, ExperimentVariant } from './types';
 
 let fs = null;
 
-if (typeof window === "undefined") {
-  fs = require("fs-extra");
+if (typeof window === 'undefined') {
+  fs = require('fs-extra');
 }
 
 function getActiveVariantForExperiment(
-  experiment: Experiment
+  experiment: Experiment,
 ): ExperimentVariant[] {
   return experiment.variants.map((variantName) => {
     const item: ExperimentVariant = {};
 
     item[experiment.name] = variantName;
+
     return item;
   });
 }
 
 function getPermutations(
-  experimentsArray: Experiment[]
+  experimentsArray: Experiment[],
 ): ExperimentVariant[] | undefined {
   if (!experimentsArray || experimentsArray.length === 0) {
     return undefined;
@@ -50,25 +51,26 @@ function getPermutations(
 export function explodePathsWithVariantCombinations(paths: string[]): string[] {
   const pathToExperimentsPayload = nodePath.join(
     process.cwd(),
-    EXPERIMENTS_FILE_NAME
+    EXPERIMENTS_FILE_NAME,
   );
 
   if (!fs.existsSync(pathToExperimentsPayload)) {
     console.warn(
-      `Failed to load experiments payload, file not found. Expected path: ${pathToExperimentsPayload}`
+      `Failed to load experiments payload, file not found. Expected path: ${pathToExperimentsPayload}`,
     );
 
     return paths;
   }
 
-  const experiments = fs.readJsonSync(pathToExperimentsPayload, "utf8");
+  const experiments = fs.readJsonSync(pathToExperimentsPayload, 'utf8');
 
   const permutatedPaths: string[] = [];
 
   paths.forEach((path) => {
-    const normalizedPath = path === "/" ? "/index" : path;
+    const normalizedPath = path === '/' ? '/index' : path;
+
     experiments.forEach(({ pagePathRegex, experimentsPayload }) => {
-      const pathRegex = new RegExp(pagePathRegex, "gi");
+      const pathRegex = new RegExp(pagePathRegex, 'gi');
 
       if (pathRegex.test(normalizedPath)) {
         const numberOfExperiments = Object.keys(experimentsPayload).length;
@@ -77,13 +79,13 @@ export function explodePathsWithVariantCombinations(paths: string[]): string[] {
           throw new Error(
             `Too much experiments [${numberOfExperiments}] for the page [${path}], this number of experiments will produce at least ${Math.pow(
               numberOfExperiments,
-              2
-            )} variants of the page!`
+              2,
+            )} variants of the page!`,
           );
         }
 
         const transformed: Experiment[] = Object.keys(
-          experimentsPayload
+          experimentsPayload,
         ).reduce((flattenedExperiments, expName) => {
           flattenedExperiments.push({
             name: expName,
@@ -105,7 +107,7 @@ export function explodePathsWithVariantCombinations(paths: string[]): string[] {
           payload.sort();
 
           permutatedPaths.push(
-            `${normalizedPath}${AB_TEST_PAYLOAD_PREFIX}${payload.toString()}`
+            `${normalizedPath}${AB_TEST_PAYLOAD_PREFIX}${payload.toString()}`,
           );
         });
       }
@@ -116,21 +118,21 @@ export function explodePathsWithVariantCombinations(paths: string[]): string[] {
 }
 
 export function stripPermutationsPayload(
-  query: ParsedUrlQuery
+  query: ParsedUrlQuery,
 ): { result: ParsedUrlQuery; permutationsPayload: string } {
-  let permutationsPayload = "";
+  let permutationsPayload = '';
 
   const resultQuery: ParsedUrlQuery = Object.keys(query).reduce(
     (queryParamsDict, key) => {
       const value = query[key];
 
-      if (typeof value !== "string") {
+      if (typeof value !== 'string') {
         queryParamsDict[key] = value;
 
         return queryParamsDict;
       }
 
-      const hasAbTestsPayload = value.indexOf(AB_TEST_PAYLOAD_PREFIX) !== -1;
+      const hasAbTestsPayload = value.includes(AB_TEST_PAYLOAD_PREFIX);
 
       if (!hasAbTestsPayload) {
         queryParamsDict[key] = value;
@@ -139,12 +141,13 @@ export function stripPermutationsPayload(
       }
 
       const [queryValues, payload] = value.split(AB_TEST_PAYLOAD_PREFIX);
+
       queryParamsDict[key] = queryValues;
       permutationsPayload = payload;
 
       return queryParamsDict;
     },
-    {}
+    {},
   );
 
   return {
