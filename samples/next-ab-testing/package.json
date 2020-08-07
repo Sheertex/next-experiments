@@ -1,0 +1,24 @@
+{
+  "name": "next-ab-testing",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next export",
+    "start": "next start",
+    "serve": "http-server ./out"
+  },
+  "dependencies": {
+    "next": "https://registry.npmjs.org/@sheertex/next/-/next-9.4.5-canary.14.tgz",
+    "next-experiments": "^1.0.12-alpha",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.6",
+    "@types/react": "^16.9.35",
+    "http-server": "^0.12.3",
+    "typescript": "^3.9.3"
+  }
+}

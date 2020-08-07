@@ -1,0 +1,40 @@
+FROM vm/ubuntu:18.04
+
+MEMORY 2G
+
+# Setup
+## System
+### Env
+ENV DISPLAY=:1.0
+ENV YARN_CACHE_FOLDER=/home/testrunuser/build/.yarn/cache
+
+## User
+USER testrunuser
+WORKDIR /home/testrunuser/build
+
+### `node` (via `volta`)
+RUN curl https://get.volta.sh | bash
+RUN volta install node yarn
+
+### Cache
+CACHE ~/.yarn/cache
+
+### Install app w/ deps
+COPY . .
+
+RUN yarn
+
+# Run
+## Build
+RUN yarn run build
+
+## Lint && Test
+RUN yarn run lint:all
+RUN yarn run test:unit
+
+## Build sample site
+RUN cd ./samples/next-ab-testing && yarn && yarn run build
+
+## Serve sample site
+RUN BACKGROUND cd ./samples/next-ab-testing && yarn run start
+EXPOSE WEBSITE http://localhost:3000

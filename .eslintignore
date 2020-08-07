@@ -1,0 +1,7 @@
+dist
+node_modules
+*.config.js
+.eslintrc.js
+/samples
+/src/webpack/tests/webpackFiles
+/src/webpack/tests/parserFiles
