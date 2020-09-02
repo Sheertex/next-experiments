@@ -8,12 +8,6 @@ import {
   ExperimentDefinitionFromFile,
 } from '../types';
 
-// let fs = null;
-
-// if (typeof window === 'undefined') {
-//   fs = require('fs-extra');
-// }
-
 function getAllPossiblePermutationForSingleExperiment(
   experiment: Experiment,
 ): ExperimentVariant[] {
