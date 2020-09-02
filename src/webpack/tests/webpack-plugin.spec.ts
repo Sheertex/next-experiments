@@ -7,7 +7,7 @@ import webpack from 'webpack';
 import ExtractExperimentsPlugin from '../index';
 import fs from 'fs-extra';
 
-const EXTENDED_TIMEOUT = 15000;
+const EXTENDED_TIMEOUT = 30000;
 
 const resultFilePath = path.resolve(__dirname, 'tmp', 'experiments.json');
 
