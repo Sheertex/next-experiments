@@ -141,6 +141,6 @@ For advanced usage examples refer to the sample project
 
 ### How to publish new version to npm?
 
-1. Run `yarn run test:unit`
+1. Run `yarn run test`
 1. Bump version in `package.json`
 1. Run `npm publish`

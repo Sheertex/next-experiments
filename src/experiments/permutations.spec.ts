@@ -1,5 +1,3 @@
-import assert from 'assert';
-import { describe, it, beforeEach, afterEach, before } from 'mocha';
 import mockFS from 'mock-fs';
 
 import {
@@ -14,8 +12,8 @@ describe('experiments/permutations', function () {
       it('it pass throught', function () {
         const result = stripPermutationsPayloadFromQuery({});
 
-        assert.deepEqual(result.query, {});
-        assert.equal(result.permutationsPayload, '');
+        expect(result.query).toStrictEqual({});
+        expect(result.permutationsPayload).toBe('');
       });
     });
 
@@ -23,8 +21,8 @@ describe('experiments/permutations', function () {
       it('it pass throught', function () {
         const result = stripPermutationsPayloadFromQuery(undefined);
 
-        assert.equal(result.query, undefined);
-        assert.equal(result.permutationsPayload, '');
+        expect(result.query).toBe(undefined);
+        expect(result.permutationsPayload).toBe('');
       });
     });
 
@@ -35,8 +33,8 @@ describe('experiments/permutations', function () {
           (query as unknown) as ParsedUrlQuery,
         );
 
-        assert.deepEqual(result.query, query);
-        assert.equal(result.permutationsPayload, '');
+        expect(result.query).toStrictEqual(query);
+        expect(result.permutationsPayload).toBe('');
       });
     });
 
@@ -47,8 +45,8 @@ describe('experiments/permutations', function () {
           (query as unknown) as ParsedUrlQuery,
         );
 
-        assert.deepEqual(result.query, query);
-        assert.equal(result.permutationsPayload, '');
+        expect(result.query).toStrictEqual(query);
+        expect(result.permutationsPayload).toBe('');
       });
     });
 
@@ -57,26 +55,34 @@ describe('experiments/permutations', function () {
         const query = { a: 'a--ab--test' };
         const result = stripPermutationsPayloadFromQuery(query);
 
-        assert.deepEqual(result.query, { a: 'a' });
-        assert.equal(result.permutationsPayload, 'test');
+        expect(result.query).toStrictEqual({ a: 'a' });
+        expect(result.permutationsPayload).toBe('test');
       });
     });
   });
 
   describe('#explodePathsWithVariantCombinations ', function () {
     describe('when experiments json file does not exist', function () {
+      const spy = jest.spyOn(console, 'warn').mockImplementation();
+
       beforeEach(() => {
         mockFS();
       });
 
       afterEach(() => {
         mockFS.restore();
+        spy.mockRestore();
       });
 
       it('it pass throught received `paths`', function () {
         const result = explodePathsWithVariantCombinations(['/index']);
 
-        assert.deepEqual(result, ['/index']);
+        expect(result).toStrictEqual(['/index']);
+        expect(spy).toHaveBeenCalledWith(
+          expect.stringMatching(
+            /Failed to load experiments payload, file not found./,
+          ),
+        );
       });
     });
 
@@ -86,7 +92,7 @@ describe('experiments/permutations', function () {
       });
 
       describe('when experiments file has no experiemnts', function () {
-        before(function () {
+        beforeEach(function () {
           mockFS({
             'experiments.json': JSON.stringify([]),
           });
@@ -95,12 +101,12 @@ describe('experiments/permutations', function () {
         it('it returns `paths` as is', function () {
           const result = explodePathsWithVariantCombinations(['/index']);
 
-          assert.deepEqual(result, ['/index']);
+          expect(result).toStrictEqual(['/index']);
         });
       });
 
       describe('when page path match index page regex', function () {
-        before(function () {
+        beforeEach(function () {
           mockFS({
             'experiments.json': JSON.stringify([
               {
@@ -112,7 +118,7 @@ describe('experiments/permutations', function () {
         });
 
         it('it returns correct permutations for the index page', function () {
-          assert.deepEqual(explodePathsWithVariantCombinations(['/']), [
+          expect(explodePathsWithVariantCombinations(['/'])).toStrictEqual([
             '/',
             '/index--ab--experiment=variant',
           ]);
@@ -121,7 +127,7 @@ describe('experiments/permutations', function () {
 
       describe('when page path match regex', function () {
         describe('and has single experiment with single variant', function () {
-          before(function () {
+          beforeEach(function () {
             mockFS({
               'experiments.json': JSON.stringify([
                 {
@@ -133,15 +139,14 @@ describe('experiments/permutations', function () {
           });
 
           it('it adds single permutation to the `paths`', function () {
-            assert.deepEqual(explodePathsWithVariantCombinations(['/index']), [
-              '/index',
-              '/index--ab--experiment=variant',
-            ]);
+            expect(
+              explodePathsWithVariantCombinations(['/index']),
+            ).toStrictEqual(['/index', '/index--ab--experiment=variant']);
           });
         });
 
         describe('and has single experiment and two variants', function () {
-          before(function () {
+          beforeEach(function () {
             mockFS({
               'experiments.json': JSON.stringify([
                 {
@@ -153,7 +158,9 @@ describe('experiments/permutations', function () {
           });
 
           it('it adds two permutations to the `paths`', function () {
-            assert.deepEqual(explodePathsWithVariantCombinations(['/index']), [
+            expect(
+              explodePathsWithVariantCombinations(['/index']),
+            ).toStrictEqual([
               '/index',
               '/index--ab--experiment=variantA',
               '/index--ab--experiment=variantB',
@@ -162,7 +169,7 @@ describe('experiments/permutations', function () {
         });
 
         describe('and has two experiments with one variant', function () {
-          before(function () {
+          beforeEach(function () {
             mockFS({
               'experiments.json': JSON.stringify([
                 {
@@ -177,7 +184,9 @@ describe('experiments/permutations', function () {
           });
 
           it('it adds two permutations to the `paths`', function () {
-            assert.deepEqual(explodePathsWithVariantCombinations(['/index']), [
+            expect(
+              explodePathsWithVariantCombinations(['/index']),
+            ).toStrictEqual([
               '/index',
               '/index--ab--experimentA=variant&experimentB=variant',
             ]);
@@ -185,7 +194,7 @@ describe('experiments/permutations', function () {
         });
 
         describe('and has two experiments with two variants', function () {
-          before(function () {
+          beforeEach(function () {
             mockFS({
               'experiments.json': JSON.stringify([
                 {
@@ -197,7 +206,9 @@ describe('experiments/permutations', function () {
           });
 
           it('it adds four permutations to the `paths` and payload are sorted alphabetically', function () {
-            assert.deepEqual(explodePathsWithVariantCombinations(['/index']), [
+            expect(
+              explodePathsWithVariantCombinations(['/index']),
+            ).toStrictEqual([
               '/index',
               '/index--ab--a=1&z=1',
               '/index--ab--a=2&z=1',
@@ -209,7 +220,7 @@ describe('experiments/permutations', function () {
       });
 
       describe('when page path does not match regex', function () {
-        before(function () {
+        beforeEach(function () {
           mockFS({
             'experiments.json': JSON.stringify([
               {
@@ -221,9 +232,9 @@ describe('experiments/permutations', function () {
         });
 
         it('return `paths` as is', function () {
-          assert.deepEqual(explodePathsWithVariantCombinations(['/index']), [
-            '/index',
-          ]);
+          expect(
+            explodePathsWithVariantCombinations(['/index']),
+          ).toStrictEqual(['/index']);
         });
       });
     });

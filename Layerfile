@@ -30,7 +30,7 @@ RUN yarn run build
 
 ## Lint && Test
 RUN yarn run lint:all
-RUN yarn run test:unit
+RUN yarn run test
 
 ## Build sample site
 RUN cd ./samples/next-ab-testing && yarn && yarn run build
