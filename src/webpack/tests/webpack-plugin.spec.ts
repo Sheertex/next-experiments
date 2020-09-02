@@ -1,7 +1,13 @@
+/**
+ * @jest-environment node
+ */
+
 import path from 'path';
 import webpack from 'webpack';
 import ExtractExperimentsPlugin from '../index';
 import fs from 'fs-extra';
+
+const TIMEOUT = 10000;
 
 const resultFilePath = path.resolve(__dirname, 'tmp', 'experiments.json');
 
@@ -102,22 +108,26 @@ describe('webpack/webpack-plugin', function () {
       });
     });
 
-    it('with several experiments', async function () {
-      await runWebpack(['entryWithSeveralExperiments', 'index.jsx']);
+    it(
+      'with several experiments',
+      async function () {
+        await runWebpack(['entryWithSeveralExperiments', 'index.jsx']);
 
-      const result = fs.readJSONSync(resultFilePath);
-      const expectedResult = [
-        {
-          experimentsPayload: {
-            experiment1: ['variantA', 'variantB'],
-            experiment2: ['variantA', 'variantB'],
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [
+          {
+            experimentsPayload: {
+              experiment1: ['variantA', 'variantB'],
+              experiment2: ['variantA', 'variantB'],
+            },
+            pagePathRegex: 'index$',
           },
-          pagePathRegex: 'index$',
-        },
-      ];
+        ];
 
-      expect(result).toStrictEqual(expectedResult);
-    });
+        expect(result).toStrictEqual(expectedResult);
+      },
+      TIMEOUT,
+    );
 
     describe('it fails', function () {
       it('when .jsx file has no Experiment import', async function () {
