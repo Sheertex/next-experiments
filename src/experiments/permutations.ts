@@ -1,5 +1,4 @@
 import nodePath from 'path';
-import fs from 'fs-extra';
 import { ParsedUrlQuery } from 'querystring';
 import { EXPERIMENTS_FILE_NAME, AB_TEST_PAYLOAD_PREFIX } from '../constants';
 import {
@@ -7,6 +6,12 @@ import {
   ExperimentVariant,
   ExperimentDefinitionFromFile,
 } from '../types';
+
+let fs = null;
+
+if (typeof window === 'undefined') {
+  fs = require('fs-extra');
+}
 
 function getAllPossiblePermutationForSingleExperiment(
   experiment: Experiment,
