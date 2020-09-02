@@ -69,6 +69,10 @@ const runWebpack = async (
 
 describe('webpack/webpack-plugin', function () {
   describe('#ExperimentExtractorPlugin', function () {
+    beforeAll(() => {
+      jest.setTimeout(EXTENDED_TIMEOUT);
+    });
+
     beforeEach(() => {
       fs.emptyDirSync(path.resolve(__dirname, 'tmp'));
     });
@@ -82,16 +86,12 @@ describe('webpack/webpack-plugin', function () {
         await runWebpack(['empty.jsx']);
       });
 
-      it(
-        'returns an empty array',
-        async function () {
-          const result = fs.readJSONSync(resultFilePath);
-          const expectedResult = [];
+      it('returns an empty array', async function () {
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [];
 
-          expect(result).toStrictEqual(expectedResult);
-        },
-        EXTENDED_TIMEOUT,
-      );
+        expect(result).toStrictEqual(expectedResult);
+      });
     });
 
     describe('when JSX file includes one experiment', function () {
@@ -99,95 +99,75 @@ describe('webpack/webpack-plugin', function () {
         await runWebpack(['sample.jsx']);
       });
 
-      it(
-        'returns an experiments payload with one experiment',
-        async function () {
-          const result = fs.readJSONSync(resultFilePath);
-          const expectedResult = [
-            {
-              experimentsPayload: { experiment: ['variantA', 'variantB'] },
-              pagePathRegex: 'index$',
-            },
-          ];
-
-          expect(result).toStrictEqual(expectedResult);
-        },
-        EXTENDED_TIMEOUT,
-      );
-    });
-
-    it(
-      'with several experiments',
-      async function () {
-        await runWebpack(['entryWithSeveralExperiments', 'index.jsx']);
-
+      it('returns an experiments payload with one experiment', async function () {
         const result = fs.readJSONSync(resultFilePath);
         const expectedResult = [
           {
-            experimentsPayload: {
-              experiment1: ['variantA', 'variantB'],
-              experiment2: ['variantA', 'variantB'],
-            },
+            experimentsPayload: { experiment: ['variantA', 'variantB'] },
             pagePathRegex: 'index$',
           },
         ];
 
         expect(result).toStrictEqual(expectedResult);
-      },
-      EXTENDED_TIMEOUT,
-    );
+      });
+    });
+
+    it('with several experiments', async function () {
+      await runWebpack(['entryWithSeveralExperiments', 'index.jsx']);
+
+      const result = fs.readJSONSync(resultFilePath);
+      const expectedResult = [
+        {
+          experimentsPayload: {
+            experiment1: ['variantA', 'variantB'],
+            experiment2: ['variantA', 'variantB'],
+          },
+          pagePathRegex: 'index$',
+        },
+      ];
+
+      expect(result).toStrictEqual(expectedResult);
+    });
 
     describe('it fails', function () {
-      it(
-        'when .jsx file has no Experiment import',
-        async function () {
-          expect.assertions(1);
-          await expect(runWebpack(['noImports.jsx'])).rejects.toBeDefined();
-        },
-        EXTENDED_TIMEOUT,
-      );
+      it('when .jsx file has no Experiment import', async function () {
+        expect.assertions(1);
+        await expect(runWebpack(['noImports.jsx'])).rejects.toBeDefined();
+      });
     });
 
     describe('resolve correct regex', function () {
-      it(
-        'for dynamic pages',
-        async function () {
-          await runWebpack(['sample.jsx'], 'pages/products/[handle]');
+      it('for dynamic pages', async function () {
+        await runWebpack(['sample.jsx'], 'pages/products/[handle]');
 
-          const result = fs.readJSONSync(resultFilePath);
-          const expectedResult = [
-            {
-              experimentsPayload: {
-                experiment: ['variantA', 'variantB'],
-              },
-              pagePathRegex: '^\\/products\\/[^\\s\\/]+$',
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [
+          {
+            experimentsPayload: {
+              experiment: ['variantA', 'variantB'],
             },
-          ];
+            pagePathRegex: '^\\/products\\/[^\\s\\/]+$',
+          },
+        ];
 
-          expect(result).toStrictEqual(expectedResult);
-        },
-        EXTENDED_TIMEOUT,
-      );
+        expect(result).toStrictEqual(expectedResult);
+      });
 
-      it(
-        'for static pages',
-        async function () {
-          await runWebpack(['sample.jsx'], 'pages/products.js');
+      it('for static pages', async function () {
+        await runWebpack(['sample.jsx'], 'pages/products.js');
 
-          const result = fs.readJSONSync(resultFilePath);
-          const expectedResult = [
-            {
-              experimentsPayload: {
-                experiment: ['variantA', 'variantB'],
-              },
-              pagePathRegex: '^\\/products$',
+        const result = fs.readJSONSync(resultFilePath);
+        const expectedResult = [
+          {
+            experimentsPayload: {
+              experiment: ['variantA', 'variantB'],
             },
-          ];
+            pagePathRegex: '^\\/products$',
+          },
+        ];
 
-          expect(result).toStrictEqual(expectedResult);
-        },
-        EXTENDED_TIMEOUT,
-      );
+        expect(result).toStrictEqual(expectedResult);
+      });
     });
   });
 });
