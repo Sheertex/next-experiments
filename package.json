@@ -9,7 +9,7 @@
   "private": false,
   "scripts": {
     "build": "tsc -p ./tsconfig.lib.json",
-    "prepare": "npm run build",
+    "prepare": "yarn build",
     "test": "yarn jest",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx",
     "lint:all": "eslint --ext .js,.jsx,.ts,.tsx ."

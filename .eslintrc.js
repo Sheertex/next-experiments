@@ -4,12 +4,11 @@ module.exports = {
     es6: true,
     node: true,
   },
-  plugins: ['@typescript-eslint', 'mocha', 'prettier', 'testcafe'],
+  plugins: ['@typescript-eslint', 'prettier'],
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
-    'plugin:mocha/recommended',
-    'plugin:testcafe/recommended',
+    'plugin:jest/recommended',
     'plugin:@typescript-eslint/recommended',
     'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
     'plugin:prettier/recommended', // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
@@ -28,7 +27,7 @@ module.exports = {
     react: {
       version: 'detect',
     },
-  }, 
+  },
   rules: {
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/explicit-member-accessibility': [
@@ -97,6 +96,5 @@ module.exports = {
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
     'space-infix-ops': ['error'],
-    'mocha/no-hooks-for-single-case': 'off',
   },
 };

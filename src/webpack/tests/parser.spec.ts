@@ -75,6 +75,7 @@ describe('webpack/parser', function () {
         // Sorting to apply deepStrictEqual
         // FIXME: create better types around the experiments object instead
         // of using the generic object literal type
+        // eslint-disable-next-line
         // @ts-ignore
         experiments.experiment = experiments.experiment.sort();
         expect(experiments).toStrictEqual(EXPECTED_RESULT);
