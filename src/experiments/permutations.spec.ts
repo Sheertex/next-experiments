@@ -25,7 +25,7 @@ describe('experiments/permutations', function () {
       it('it pass throught', function () {
         const result = stripPermutationsPayloadFromQuery(undefined);
 
-        expect(result.query).toBe(undefined);
+        expect(result.query).toBeUndefined();
         expect(result.permutationsPayload).toBe('');
       });
     });
