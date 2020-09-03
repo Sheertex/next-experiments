@@ -132,7 +132,11 @@ describe('webpack/webpack-plugin', function () {
     describe('it fails', function () {
       it('when .jsx file has no Experiment import', async function () {
         expect.assertions(1);
-        await expect(runWebpack(['noImports.jsx'])).rejects.toBeDefined();
+        await expect(runWebpack(['noImports.jsx'])).rejects.toEqual(
+          expect.stringMatching(
+            /Did not find any .jsx or .tsx component with "import { Experiment }/,
+          ),
+        );
       });
     });
 
