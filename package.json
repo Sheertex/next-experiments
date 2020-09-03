@@ -11,7 +11,7 @@
     "build": "tsc -p ./tsconfig.lib.json",
     "prepare": "yarn build",
     "test": "yarn jest --detectOpenHandles",
-    "test:ci": "yarn jest --runInBand --detectOpenHandles",
+    "test:ci": "yarn test --runInBand",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx",
     "lint:all": "eslint --ext .js,.jsx,.ts,.tsx ."
   },
