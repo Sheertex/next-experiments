@@ -119,7 +119,7 @@ function ExperimentWithContext({
   );
 }
 
-export default function Experiment(props: Props): ReactNode {
+export default function Experiment(props: Props): JSX.Element {
   const { name: experimentName, defaultVariantName, children } = props;
 
   assertNameIsValid(experimentName);

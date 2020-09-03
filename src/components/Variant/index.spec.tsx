@@ -1,8 +1,8 @@
-import React, { FunctionComponent, ReactNode, useContext } from 'react';
-// import { renderHook } from '@testing-library/react-hooks';
+import React, { FunctionComponent, ReactNode } from 'react';
 import { render } from '@testing-library/react';
 import ExperimentContext from '../ExperimentContext';
-// import { recordWin } from '../../events';
+import Experiment from '../Experiment';
+import * as experimentEvents from '../../events';
 import Variant from '.';
 
 const makeContextWrapper = (value): FunctionComponent => ({
@@ -14,6 +14,8 @@ const makeContextWrapper = (value): FunctionComponent => ({
     {children}
   </ExperimentContext.Provider>
 );
+
+jest.mock('../../events');
 
 describe('Variant', () => {
   describe('when provided with an invalid `name` prop', () => {
@@ -29,8 +31,6 @@ describe('Variant', () => {
     });
 
     it('throws an error if the name is undefined', () => {
-      const ContextWrapper = makeContextWrapper({ name: 'experiment-foo' });
-
       expect(() =>
         render(
           <ContextWrapper>
@@ -53,6 +53,49 @@ describe('Variant', () => {
       ).toThrowError(/__!!some_invalidname!!@" is not valid name/);
 
       expect(consoleSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('when provided with an valid `name` prop', () => {
+    describe('if the children prop is a function', () => {
+      it('renders the `children` correctly', () => {
+        const { getByTestId, getByText } = render(
+          <Experiment name="experiment-foo" defaultVariantName="variant-bar">
+            <Variant name="variant-bar">
+              {(win) => {
+                return (
+                  <button data-testid="bar" onClick={win}>
+                    Bar!
+                  </button>
+                );
+              }}
+            </Variant>
+          </Experiment>,
+        );
+
+        expect(getByTestId('bar')).toBeDefined();
+        expect(getByText('Bar!')).toBeDefined();
+      });
+
+      it('calls the `recordWin` method properly', () => {
+        const { getByTestId } = render(
+          <Experiment name="experiment-foo" defaultVariantName="variant-bar">
+            <Variant name="variant-bar">
+              {(win) => (
+                <button data-testid="bar" onClick={win}>
+                  Bar!
+                </button>
+              )}
+            </Variant>
+          </Experiment>,
+        );
+
+        getByTestId('bar').click();
+        expect(experimentEvents.recordWin).toHaveBeenCalledWith(
+          'experiment-foo',
+          'variant-bar',
+        );
+      });
     });
   });
 });
