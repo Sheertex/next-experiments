@@ -1,11 +1,10 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-      "jsx": "react",
-      "module": "commonjs",
-      "declaration": false,   
-      "target": "es6"      
-    },
-    "include": ["**/*.spec.ts"]
-  }
-  
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "module": "commonjs",
+    "types": ["jest"]
+  },
+  "include": ["**/*.spec.ts", "**/*.spec.tsx"],
+  "exclude": ["dist/**/*", "samples/**/*"]
+}

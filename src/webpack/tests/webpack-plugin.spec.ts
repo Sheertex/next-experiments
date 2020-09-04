@@ -1,9 +1,13 @@
-import assert from 'assert';
-import { before, beforeEach, describe, it, after } from 'mocha';
+/**
+ * @jest-environment node
+ */
+
 import path from 'path';
 import webpack from 'webpack';
 import ExtractExperimentsPlugin from '../index';
 import fs from 'fs-extra';
+
+const EXTENDED_TIMEOUT = 30000;
 
 const resultFilePath = path.resolve(__dirname, 'tmp', 'experiments.json');
 
@@ -65,18 +69,20 @@ const runWebpack = async (
 
 describe('webpack/webpack-plugin', function () {
   describe('#ExperimentExtractorPlugin', function () {
-    this.timeout(10000);
+    beforeAll(() => {
+      jest.setTimeout(EXTENDED_TIMEOUT);
+    });
 
     beforeEach(() => {
       fs.emptyDirSync(path.resolve(__dirname, 'tmp'));
     });
 
-    after(function () {
+    afterEach(function () {
       fs.emptyDirSync(path.resolve(__dirname, 'tmp'));
     });
 
     describe('when JSX file includes zero experiments', function () {
-      before(async function () {
+      beforeEach(async function () {
         await runWebpack(['empty.jsx']);
       });
 
@@ -84,7 +90,7 @@ describe('webpack/webpack-plugin', function () {
         const result = fs.readJSONSync(resultFilePath);
         const expectedResult = [];
 
-        assert.deepStrictEqual(result, expectedResult);
+        expect(result).toStrictEqual(expectedResult);
       });
     });
 
@@ -102,7 +108,7 @@ describe('webpack/webpack-plugin', function () {
           },
         ];
 
-        assert.deepStrictEqual(result, expectedResult);
+        expect(result).toStrictEqual(expectedResult);
       });
     });
 
@@ -120,14 +126,16 @@ describe('webpack/webpack-plugin', function () {
         },
       ];
 
-      assert.deepStrictEqual(result, expectedResult);
+      expect(result).toStrictEqual(expectedResult);
     });
 
     describe('it fails', function () {
       it('when .jsx file has no Experiment import', async function () {
-        assert.rejects(
-          runWebpack(['noImports.jsx']),
-          /ERROR in Did not find any .jsx or .tsx component with "import { Experiment }/gim,
+        expect.assertions(1);
+        await expect(runWebpack(['noImports.jsx'])).rejects.toEqual(
+          expect.stringMatching(
+            /Did not find any .jsx or .tsx component with "import { Experiment }/,
+          ),
         );
       });
     });
@@ -146,7 +154,7 @@ describe('webpack/webpack-plugin', function () {
           },
         ];
 
-        assert.deepStrictEqual(result, expectedResult);
+        expect(result).toStrictEqual(expectedResult);
       });
 
       it('for static pages', async function () {
@@ -162,7 +170,7 @@ describe('webpack/webpack-plugin', function () {
           },
         ];
 
-        assert.deepStrictEqual(result, expectedResult);
+        expect(result).toStrictEqual(expectedResult);
       });
     });
   });
